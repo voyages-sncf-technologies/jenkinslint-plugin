@@ -5,6 +5,7 @@ import hudson.maven.MavenModuleSet;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Shell;
+import org.jenkins.ci.plugins.jenkinslint.AbstractTestCase;
 import org.jenkins_ci.plugins.run_condition.core.AlwaysRun;
 import org.jenkins_ci.plugins.run_condition.core.StringsMatchCondition;
 import org.jenkins_ci.plugins.run_condition.logic.ConditionContainer;
@@ -25,8 +26,8 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Victor Martinez
  */
-public class CyclomaticComplexityCheckerTestCase extends AbstractCheckerTestCase {
-    private CyclomaticComplexityChecker checker = new CyclomaticComplexityChecker();
+public class CyclomaticComplexityCheckerTestCase extends AbstractTestCase {
+    private CyclomaticComplexityChecker checker = new CyclomaticComplexityChecker(true, CyclomaticComplexityChecker.THRESHOLD);
 
     private ConditionalBuilder booleanCondition() {
         ArrayList<BuildStep> list = new ArrayList<BuildStep>();
@@ -65,6 +66,10 @@ public class CyclomaticComplexityCheckerTestCase extends AbstractCheckerTestCase
         project.getBuildersList().add(orCondition());
         project.getBuildersList().add(orCondition());
         assertTrue(checker.executeCheck(project));
+        int threshold = checker.getThreshold();
+        checker.setThreshold(14);
+        assertFalse(checker.executeCheck(project));
+        checker.setThreshold(threshold);
     }
     @Test public void testMavenModuleJob() throws Exception {
         MavenModuleSet project = j.createMavenProject();

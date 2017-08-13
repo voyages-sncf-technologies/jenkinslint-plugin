@@ -13,22 +13,14 @@ import java.util.logging.Level;
  */
 public class CyclomaticComplexityChecker extends AbstractCheck {
 
-    private static final String SYS_PROPERTY_NAME  = CyclomaticComplexityChecker.class.getName() + ".threshold";
+    public final static int THRESHOLD = 4;
     private int threshold = 4;
 
-
-    public CyclomaticComplexityChecker() {
-        super();
+    public CyclomaticComplexityChecker(boolean enabled, int threshold) {
+        super(enabled);
         this.setDescription(Messages.CyclometicComplexityCheckerDesc());
         this.setSeverity(Messages.CyclometicComplexityCheckerSeverity());
-        String limit = System.getProperty(SYS_PROPERTY_NAME);
-        if (limit != null) {
-            try {
-                threshold = Integer.valueOf(limit);
-            } catch (NumberFormatException e) {
-                LOG.warning("Ignoring invalid " + SYS_PROPERTY_NAME + "=" + limit);
-            }
-        }
+        this.setThreshold(threshold);
     }
 
     public boolean executeCheck(Item item) {
@@ -42,7 +34,7 @@ public class CyclomaticComplexityChecker extends AbstractCheck {
                     if (getPrebuilders instanceof List) {
                         cyclomatic = totalCyclomatic(((List)getPrebuilders));
                         found = cyclomatic > threshold;                    }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     LOG.log(Level.WARNING, "Exception " + e.getMessage(), e.getCause());
                 }
             }
@@ -56,7 +48,7 @@ public class CyclomaticComplexityChecker extends AbstractCheck {
                     if (getBuilders instanceof List) {
                         cyclomatic = totalCyclomatic(((List)getBuilders));
                         found = cyclomatic > threshold;                    }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     LOG.log(Level.WARNING, "Exception " + e.getMessage(), e.getCause());
                 }
             }
@@ -117,5 +109,13 @@ public class CyclomaticComplexityChecker extends AbstractCheck {
             LOG.log(Level.WARNING, "Exception " + e.getMessage(), e.getCause());
         }
         return cyclomatic;
+    }
+
+    public int getThreshold () {
+        return this.threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
     }
 }
